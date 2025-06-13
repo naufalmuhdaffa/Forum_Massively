@@ -71,7 +71,7 @@ async function updateProfile(payload, files = {}) {
   try {
     const form = new FormData();
     // ✨ Ubah action jadi update_profile
-    form.append("action", "update_profile");
+    form.append("action", "update_user");
 
     // Kalau mau ganti username, role, password, border, background:
     if (payload.newUsername) form.append("newUsername", payload.newUsername);
