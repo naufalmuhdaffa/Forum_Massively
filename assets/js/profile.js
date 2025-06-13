@@ -495,10 +495,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       const oldPassDiv = document.getElementById("oldPasswordDiv");
       currentUser.has_password = true;
       oldPassDiv.style.display = "block";
-const note = document.querySelector(".pesanBelumLogin");
-if (note) {
-  note.style.display = "none";
-}
+      const note = document.querySelector(".pesanBelumLogin");
+      if (note) {
+        note.style.display = "none";
+      }
     }
     if (res.status === "success") {
       showToast("✅ Password berhasil diubah!", 2000);

@@ -13,7 +13,8 @@ require_once __DIR__ . '/user_functions.php';
  * @param string|null $email
  * @return array ['status'=>'success'|'error', 'message'=>string]
  */
-function registerUser(string $username, string $plainPassword, ?string $email): array {
+function registerUser(string $username, string $plainPassword, ?string $email): array
+{
     global $pdo;
 
     // Cek apakah username sudah dipakai
@@ -43,7 +44,8 @@ function registerUser(string $username, string $plainPassword, ?string $email): 
  * @param string $plainPassword
  * @return array ['status'=>'success'|'error', 'message'=>string, 'data'=>[user data jika success]]
  */
-function loginUser(string $username, string $plainPassword): array {
+function loginUser(string $username, string $plainPassword): array
+{
     global $pdo;
     $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->execute([$username]);
@@ -65,7 +67,8 @@ function loginUser(string $username, string $plainPassword): array {
  * @param int $id
  * @return array|null
  */
-function getUserById(int $id): ?array {
+function getUserById(int $id): ?array
+{
     global $pdo;
     $stmt = $pdo->prepare("
     SELECT id, username, email, password, role, border, avatar, background
@@ -82,7 +85,8 @@ function getUserById(int $id): ?array {
  * @param string $username
  * @return array|null
  */
-function getUserByUsername(string $username): ?array {
+function getUserByUsername(string $username): ?array
+{
     global $pdo;
     $stmt = $pdo->prepare("
         SELECT id, username, email, role, avatar, border, background, created_at, updated_at
@@ -99,7 +103,8 @@ function getUserByUsername(string $username): ?array {
  *
  * @return array
  */
-function getAllUsers(): array {
+function getAllUsers(): array
+{
     global $pdo;
     $stmt = $pdo->query("
         SELECT id, username, email, role, avatar, border, background, created_at, updated_at
@@ -138,38 +143,38 @@ function updateUser(
     // Ganti username
     if ($username !== '') {
         $sqlParts[] = "username = ?";
-        $params[]   = $username;
+        $params[] = $username;
     }
     // Ganti email
     if ($email !== null) {
         $sqlParts[] = "email = ?";
-        $params[]   = $email;
+        $params[] = $email;
     }
     // Ganti password (hash)
     if ($plainPassword !== null) {
         $hash = password_hash($plainPassword, PASSWORD_DEFAULT);
         $sqlParts[] = "password = ?";
-        $params[]   = $hash;
+        $params[] = $hash;
     }
     // Ganti avatar
     if ($avatarPath !== null) {
         $sqlParts[] = "avatar = ?";
-        $params[]   = $avatarPath;
+        $params[] = $avatarPath;
     }
     // Ganti role
     if ($role !== '') {
         $sqlParts[] = "role = ?";
-        $params[]   = $role;
+        $params[] = $role;
     }
     // Ganti border
     if ($border !== null) {
         $sqlParts[] = "border = ?";
-        $params[]   = $border;
+        $params[] = $border;
     }
     // Ganti background
     if ($background !== null) {
         $sqlParts[] = "background = ?";
-        $params[]   = $background;
+        $params[] = $background;
     }
 
     if (empty($sqlParts)) {
@@ -193,7 +198,8 @@ function updateUser(
  * @param int $id
  * @return array
  */
-function deleteUser(int $id): array {
+function deleteUser(int $id): array
+{
     global $pdo;
 
     try {
@@ -257,26 +263,27 @@ function deleteUser(int $id): array {
 }
 
 // Login Google
-function getUserByEmail($email) {
+function getUserByEmail($email)
+{
     global $pdo;  // gunakan $pdo, bukan $conn atau $mysqli
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
     $stmt->execute(['email' => $email]);
     return $stmt->fetch(PDO::FETCH_ASSOC); // false kalau gak ada
 }
 
-function insertUser($data) {
+function insertUser($data)
+{
     global $pdo;
     $stmt = $pdo->prepare("
       INSERT INTO users (username, password, email, google_id, role)
       VALUES (:username, :password, :email, :google_id, :role)
     ");
     $stmt->execute([
-      'username'  => $data['username'],
-      'password'  => $data['password'],    // kosong string untuk Google user
-      'email'     => $data['email'],
-      'google_id' => $data['google_id'],
-      'role'      => $data['role']
+        'username' => $data['username'],
+        'password' => $data['password'],    // kosong string untuk Google user
+        'email' => $data['email'],
+        'google_id' => $data['google_id'],
+        'role' => $data['role']
     ]);
     return $pdo->lastInsertId();
 }
-

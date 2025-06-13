@@ -9,6 +9,7 @@ require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/user_functions.php';
 require_once __DIR__ . '/thread_functions.php';
 
+
 $action = $_POST['action'] ?? '';
 
 // Jika action = 'update_profile', alihkan ke 'update_user'

@@ -33,7 +33,7 @@ body {
   position: relative;
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  top: 17.5%;
+  top: 20.4%;
 }
 
 ::-webkit-scrollbar {
@@ -45,7 +45,6 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-
 
 h2 {
   color: var(--primary);
@@ -86,12 +85,13 @@ button {
   color: white;
   border: none;
   box-shadow: 0 0 10px rgba(108, 92, 231, 0.5);
+  margin-top: 2rem;
 }
 
 button:hover {
   border: 1px solid var(--primary);
-  background: linear-gradient(135deg, #a29bfe, #6c5ce7);
-  color: white;
+  background: var(--white);
+  color: var(--primary);
   box-shadow: 0 0 20px rgba(108, 92, 231, 0.7);
 }
 
@@ -144,7 +144,6 @@ button:hover {
     padding: 0.7rem;
   }
 }
-
 
 #portalTransition {
   position: fixed;

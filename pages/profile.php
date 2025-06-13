@@ -2,8 +2,8 @@
 session_start();
 require_once __DIR__ . '/../includes/auth.php';
 if (!isLoggedIn()) {
-    header("Location: login.php");
-    exit;
+	header("Location: login.php");
+	exit;
 }
 ?>
 <!DOCTYPE HTML>
@@ -58,30 +58,33 @@ if (!isLoggedIn()) {
 
 	<!-- Header -->
 	<div id="boxes">
-        <header id="header">
-            <a href="#main" class="logo">HertaHub</a>
-        </header>
-    </div>
+		<header id="header">
+			<a href="#main" class="logo">HertaHub</a>
+		</header>
+	</div>
 
 	<!-- Nav -->
 	<nav id="nav">
 		<ul class="links">
-            <?php if (isset($_SESSION['user_id'])): ?>
-            <li><a href="../index.php">Home</a></li>
-            <li class="active"><a href="profile.php">Profile</a></li>
-            <li><a href="forum.php">Forum</a></li>
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-            <li><a href="kelolaUser.php">Kelola User</a></li>
-            <?php endif; ?>
-            <li><a href="#" id="logoutBtn">Logout</a></li>
-            <?php else: ?>
-            <li><a href="login.php">Login / Register</a></li>
-            <?php endif; ?>
-        </ul>
+			<?php if (isset($_SESSION['user_id'])): ?>
+				<li><a href="../index.php">Home</a></li>
+				<li class="active"><a href="profile.php">Profile</a></li>
+				<li><a href="forum.php">Forum</a></li>
+				<?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+					<li><a href="kelolaUser.php">Kelola User</a></li>
+				<?php endif; ?>
+				<li><a href="#" id="logoutBtn">Logout</a></li>
+			<?php else: ?>
+				<li><a href="login.php">Login / Register</a></li>
+			<?php endif; ?>
+		</ul>
 		<ul class="icons">
-			<li><a href="https://twitter.com/" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-			<li><a href="https://facebook.com/" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-			<li><a href="https://instagram.com/" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+			<li><a href="https://twitter.com/" class="icon brands fa-twitter"><span class="label">Twitter</span></a>
+			</li>
+			<li><a href="https://facebook.com/" class="icon brands fa-facebook-f"><span
+						class="label">Facebook</span></a></li>
+			<li><a href="https://instagram.com/" class="icon brands fa-instagram"><span
+						class="label">Instagram</span></a></li>
 			<li><a href="https://github.com/" class="icon brands fa-github"><span class="label">GitHub</span></a></li>
 		</ul>
 	</nav>
@@ -113,9 +116,9 @@ if (!isLoggedIn()) {
 			</div>
 			<div class="info-group">
 				<div id="oldPasswordDiv">
-				<label>Password Lama</label>
-				<input type="password" id="oldPassword" />
-				<br>
+					<label>Password Lama</label>
+					<input type="password" id="oldPassword" />
+					<br>
 				</div>
 				<label>Password Baru</label>
 				<input type="password" id="newPassword" />
@@ -174,10 +177,14 @@ if (!isLoggedIn()) {
 			<section>
 				<h3>Social</h3>
 				<ul class="icons alt">
-					<li><a href="https://twitter.com/" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
-					<li><a href="https://facebook.com/" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
-					<li><a href="https://instagram.com/" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
-					<li><a href="https://github.com/" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+					<li><a href="https://twitter.com/" class="icon brands alt fa-twitter"><span
+								class="label">Twitter</span></a></li>
+					<li><a href="https://facebook.com/" class="icon brands alt fa-facebook-f"><span
+								class="label">Facebook</span></a></li>
+					<li><a href="https://instagram.com/" class="icon brands alt fa-instagram"><span
+								class="label">Instagram</span></a></li>
+					<li><a href="https://github.com/" class="icon brands alt fa-github"><span
+								class="label">GitHub</span></a></li>
 				</ul>
 			</section>
 		</section>
