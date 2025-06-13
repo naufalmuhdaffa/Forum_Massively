@@ -25,18 +25,18 @@ switch ($action) {
      * REGISTER
      * ========================= */
     case 'register':
-        $username        = trim($_POST['username'] ?? '');
-        $password        = $_POST['password'] ?? '';
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
         $confirmPassword = $_POST['confirmPassword'] ?? '';
-        $email           = trim($_POST['email'] ?? null);
-        $captchaAnswer   = trim($_POST['captchaAnswer'] ?? '');
+        $email = trim($_POST['email'] ?? null);
+        $captchaAnswer = trim($_POST['captchaAnswer'] ?? '');
 
         if ($captchaAnswer === '' || $captchaAnswer !== ($_POST['captchaSolution'] ?? '')) {
-            echo json_encode(['status'=>'error','message'=>'Captcha salah.']);
+            echo json_encode(['status' => 'error', 'message' => 'Captcha salah.']);
             exit;
         }
         if ($password !== $confirmPassword) {
-            echo json_encode(['status'=>'error','message'=>'Password konfirmasi tidak cocok.']);
+            echo json_encode(['status' => 'error', 'message' => 'Password konfirmasi tidak cocok.']);
             exit;
         }
         $res = registerUser($username, $password, $email);
@@ -47,21 +47,21 @@ switch ($action) {
      * LOGIN
      * ========================= */
     case 'login':
-        $username      = trim($_POST['username'] ?? '');
-        $password      = $_POST['password'] ?? '';
+        $username = trim($_POST['username'] ?? '');
+        $password = $_POST['password'] ?? '';
         $captchaAnswer = trim($_POST['captchaAnswer'] ?? '');
 
         if ($captchaAnswer === '' || $captchaAnswer !== ($_POST['captchaSolution'] ?? '')) {
-            echo json_encode(['status'=>'error','message'=>'Captcha salah.']);
+            echo json_encode(['status' => 'error', 'message' => 'Captcha salah.']);
             exit;
         }
         $res = loginUser($username, $password);
         if ($res['status'] === 'success') {
             $user = $res['data'];
-            $_SESSION['user_id']  = $user['id'];
+            $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
-            $_SESSION['role']     = $user['role'];
-            $_SESSION['avatar']   = $user['avatar'] ?? null;
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['avatar'] = $user['avatar'] ?? null;
             unset($user);
         }
         echo json_encode($res);
@@ -73,7 +73,7 @@ switch ($action) {
     case 'logout':
         session_unset();
         session_destroy();
-        echo json_encode(['status'=>'success','message'=>'Logout berhasil.']);
+        echo json_encode(['status' => 'success', 'message' => 'Logout berhasil.']);
         exit;
 
     /* =========================
@@ -81,30 +81,30 @@ switch ($action) {
      * ========================= */
     case 'get_current_user':
         if (!isLoggedIn()) {
-            echo json_encode(['status'=>'error','message'=>'Belum login.']);
+            echo json_encode(['status' => 'error', 'message' => 'Belum login.']);
             exit;
         }
         $user = getUserById($_SESSION['user_id']);
 
-          if (!$user) {
-    echo json_encode(['status' => 'error', 'message' => 'User tidak ditemukan']);
-    exit;
-  }
+        if (!$user) {
+            echo json_encode(['status' => 'error', 'message' => 'User tidak ditemukan']);
+            exit;
+        }
 
-  // Cek apakah user memiliki password
-  $hasPassword = !empty($user['password']); // true jika password sudah diset
+        // Cek apakah user memiliki password
+        $hasPassword = !empty($user['password']); // true jika password sudah diset
 
-  $data = [
-    'id'           => $user['id'],
-    'username'     => $user['username'],
-    'email'        => $user['email'],
-    'role'         => $user['role'],
-    'border'       => $user['border'],
-    'has_password' => $hasPassword, // 🚨 Tambahan ini!
-  ];
+        $data = [
+            'id' => $user['id'],
+            'username' => $user['username'],
+            'email' => $user['email'],
+            'role' => $user['role'],
+            'border' => $user['border'],
+            'has_password' => $hasPassword, // 🚨 Tambahan ini!
+        ];
 
 
-        echo json_encode(['status'=>'success','data'=>$data]);
+        echo json_encode(['status' => 'success', 'data' => $data]);
         exit;
 
     /* =========================
@@ -113,7 +113,7 @@ switch ($action) {
     case 'get_all_users':
         requireAdmin();
         $users = getAllUsers();
-        echo json_encode(['status'=>'success','data'=>$users]);
+        echo json_encode(['status' => 'success', 'data' => $users]);
         exit;
 
     /* =========================
@@ -123,7 +123,7 @@ switch ($action) {
         requireAdmin();
         $userId = intval($_POST['user_id'] ?? 0);
         if ($userId <= 0) {
-            echo json_encode(['status'=>'error','message'=>'User ID tidak valid.']);
+            echo json_encode(['status' => 'error', 'message' => 'User ID tidak valid.']);
             exit;
         }
         // Ambil data user
@@ -132,19 +132,22 @@ switch ($action) {
             // Hapus avatar kalau ada
             if (!empty($user['avatar']) && basename($user['avatar']) !== 'herta-kurukuru.gif') {
                 $path = __DIR__ . '/../' . $user['avatar'];
-                if (file_exists($path)) @unlink($path);
+                if (file_exists($path))
+                    @unlink($path);
             }
             // Hapus background kalau ada
             if (!empty($user['background'])) {
                 $pathBg = __DIR__ . '/../' . $user['background'];
-                if (file_exists($pathBg)) @unlink($pathBg);
+                if (file_exists($pathBg))
+                    @unlink($pathBg);
             }
             // Hapus media thread milik user
             $threads = getThreadById($userId);
             foreach ($threads as $t) {
                 if (!empty($t['media'])) {
                     $threadPath = __DIR__ . '/../' . $t['media'];
-                    if (file_exists($threadPath)) @unlink($threadPath);
+                    if (file_exists($threadPath))
+                        @unlink($threadPath);
                 }
             }
             // Hapus media reply milik user
@@ -152,7 +155,8 @@ switch ($action) {
             foreach ($replies as $r) {
                 if (!empty($r['media'])) {
                     $replyPath = __DIR__ . '/../' . $r['media'];
-                    if (file_exists($replyPath)) @unlink($replyPath);
+                    if (file_exists($replyPath))
+                        @unlink($replyPath);
                 }
             }
         }
@@ -169,7 +173,7 @@ switch ($action) {
         $oldPwd = $_POST['old_password'] ?? '';
 
         if ($userId !== $_SESSION['user_id']) {
-            echo json_encode(['status'=>'error','message'=>'Akses ditolak.']);
+            echo json_encode(['status' => 'error', 'message' => 'Akses ditolak.']);
             exit;
         }
         global $pdo;
@@ -177,216 +181,227 @@ switch ($action) {
         $stmt->execute([$userId]);
         $row = $stmt->fetch();
         if ($row && password_verify($oldPwd, $row['password'])) {
-            echo json_encode(['status'=>'success']);
+            echo json_encode(['status' => 'success']);
         } else {
-            echo json_encode(['status'=>'error','message'=>'Password lama tidak cocok']);
+            echo json_encode(['status' => 'error', 'message' => 'Password lama tidak cocok']);
         }
         exit;
 
-        
-     /* =========================
+
+    /* =========================
      * update_role (ADMIN)
      * ========================= */
-        
+
     case 'update_role':
-    // Cek session: pastikan yang request adalah admin
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+        // Cek session: pastikan yang request adalah admin
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
-    if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin')  {
-        echo json_encode([
-            'status'  => 'error',
-            'message' => 'Akses admin diperlukan.'
-        ]);
-        exit;
-    }
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Akses admin diperlukan.'
+            ]);
+            exit;
+        }
 
-    // Validasi input
-    $userId = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
-    $newRole = isset($_POST['role']) ? $_POST['role'] : '';
+        // Validasi input
+        $userId = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+        $newRole = isset($_POST['role']) ? $_POST['role'] : '';
 
-    if (!in_array($newRole, ['admin', 'user'], true) || $userId <= 0) {
-        echo json_encode([
-            'status'  => 'error',
-            'message' => 'Data role tidak valid.'
-        ]);
-        exit;
-    }
+        if (!in_array($newRole, ['admin', 'user'], true) || $userId <= 0) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Data role tidak valid.'
+            ]);
+            exit;
+        }
 
-    // Siapkan query update
-    try {
-        $stmt = $pdo->prepare("UPDATE users SET role = :role WHERE id = :id");
-        $stmt->execute([
-            ':role' => $newRole,
-            ':id'   => $userId
-        ]);
+        // Siapkan query update
+        try {
+            $stmt = $pdo->prepare("UPDATE users SET role = :role WHERE id = :id");
+            $stmt->execute([
+                ':role' => $newRole,
+                ':id' => $userId
+            ]);
 
-        echo json_encode([
-            'status'  => 'success',
-            'message' => 'Role pengguna berhasil diperbarui.'
-        ]);
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Role pengguna berhasil diperbarui.'
+            ]);
 
-    } catch (PDOException $e) {
-        // Kalau error dari DB
-        echo json_encode([
-            'status'  => 'error',
-            'message' => 'Gagal mengupdate role: ' . $e->getMessage()
-        ]);
-    }
-    break;
+        } catch (PDOException $e) {
+            // Kalau error dari DB
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Gagal mengupdate role: ' . $e->getMessage()
+            ]);
+        }
+        break;
 
 
     /* =========================
      * UPDATE_USER (profil)
      * ========================= */
     case 'update_user':
-    requireLogin();
-    $userId = $_SESSION['user_id'];
-    if (!isAdmin() && $userId !== $_SESSION['user_id']) {
-        echo json_encode(['status'=>'error','message'=>'Akses ditolak.']);
-        exit;
-    }
+        requireLogin();
+        $userId = $_SESSION['user_id'];
+        if (!isAdmin() && $userId !== $_SESSION['user_id']) {
+            echo json_encode(['status' => 'error', 'message' => 'Akses ditolak.']);
+            exit;
+        }
 
         // Ambil data lama user untuk cek conflict username
-    $existing = getUserById($userId);
-    if (!$existing) {
-        echo json_encode(['status'=>'error','message'=>'User tidak ditemukan.']);
-        exit;
-    }
-
-    $newUsername   = trim($_POST['newUsername'] ?? '');
-    $emailInput    = trim($_POST['email']       ?? '');
-    $oldPassword    = $_POST['oldPassword']         ?? '';
-    $newPassword    = trim($_POST['newPassword']    ?? '');
-    $confirmNewPwd  = trim($_POST['confirmNewPassword'] ?? '');
-    $roleBaru      = $_POST['role'] ?? null;
-    $border        = $_POST['border'] ?? null;
-    $background    = null;
-    $avatarPath    = null;
-
-    // Kalau ingin ganti username, cek dulu unique
-    if ($newUsername && $newUsername !== $existing['username']) {
-        $check = $pdo->prepare("SELECT id FROM users WHERE username = ?");
-        $check->execute([$newUsername]);
-        if ($check->fetch()) {
-            echo json_encode(['status'=>'error','message'=>'Username sudah dipakai.']);
+        $existing = getUserById($userId);
+        if (!$existing) {
+            echo json_encode(['status' => 'error', 'message' => 'User tidak ditemukan.']);
             exit;
         }
-    }
 
-    // 4. Cek unique username jika diubah
-    if ($newUsername && $newUsername !== $existing['username']) {
-        $check = $pdo->prepare("SELECT id FROM users WHERE username = ?");
-        $check->execute([$newUsername]);
-        if ($check->fetch()) {
-            echo json_encode(['status'=>'error','message'=>'Username sudah dipakai.']);
-            exit;
-        }
-    }
+        $newUsername = trim($_POST['newUsername'] ?? '');
+        $emailInput = trim($_POST['email'] ?? '');
+        $oldPassword = $_POST['oldPassword'] ?? '';
+        $newPassword = trim($_POST['newPassword'] ?? '');
+        $confirmNewPwd = trim($_POST['confirmNewPassword'] ?? '');
+        $roleBaru = $_POST['role'] ?? null;
+        $border = $_POST['border'] ?? null;
+        $background = null;
+        $avatarPath = null;
 
-    // 5. Tentukan email final: pakai input kalau ada, kalau tidak pakai yang lama
-    $email = $emailInput !== '' ? $emailInput : $existing['email'];
-    // 6. Cek unique email hanya jika diubah
-    if ($emailInput !== '' && $emailInput !== $existing['email']) {
-        $checkEmail = $pdo->prepare("SELECT id FROM users WHERE email = ?");
-        $checkEmail->execute([$emailInput]);
-        if ($checkEmail->fetch()) {
-            echo json_encode(['status'=>'error','message'=>'Email sudah dipakai.']);
-            exit;
-        }
-    }
-
-    // 3. Validasi password (hanya jika ada newPassword)
-    if ($newPassword !== '') {
-        // Jika user sudah punya password, wajib verifikasi old
-        if (!empty($existing['password'])) {
-            if (!password_verify($oldPassword, $existing['password'])) {
-                echo json_encode(['status'=>'error','message'=>'Password lama salah.']);
+        // Kalau ingin ganti username, cek dulu unique
+        if ($newUsername && $newUsername !== $existing['username']) {
+            $check = $pdo->prepare("SELECT id FROM users WHERE username = ?");
+            $check->execute([$newUsername]);
+            if ($check->fetch()) {
+                echo json_encode(['status' => 'error', 'message' => 'Username sudah dipakai.']);
                 exit;
             }
         }
-        // Cek konfirmasi
-        if ($newPassword !== $confirmNewPwd) {
-            echo json_encode(['status'=>'error','message'=>'Konfirmasi password tidak cocok.']);
-            exit;
-        }
-        // Hash baru
-        $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
-    } else {
-        // Tidak ganti password
-        $passwordHash = $existing['password'];
-    }
 
-    // Proses upload avatar
-    if (!empty($_FILES['avatar']['name'])) {
-        $uploadDir = __DIR__ . '/../uploads/avatars/';
-        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-        $ext = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
-        if (!in_array($ext, ['png','jpg','jpeg','gif','webp'])) {
-            echo json_encode(['status'=>'error','message'=>'Format avatar tidak didukung.']);
-            exit;
+        // 4. Cek unique username jika diubah
+        if ($newUsername && $newUsername !== $existing['username']) {
+            $check = $pdo->prepare("SELECT id FROM users WHERE username = ?");
+            $check->execute([$newUsername]);
+            if ($check->fetch()) {
+                echo json_encode(['status' => 'error', 'message' => 'Username sudah dipakai.']);
+                exit;
+            }
         }
 
-        // Hapus avatar lama jika bukan default
-        if (!empty($existing['avatar']) && basename($existing['avatar']) !== 'herta-kurukuru.gif') {
-            $oldPath = __DIR__ . '/../' . $existing['avatar'];
-            if (file_exists($oldPath)) @unlink($oldPath);
+        // 5. Tentukan email final: pakai input kalau ada, kalau tidak pakai yang lama
+        $email = $emailInput !== '' ? $emailInput : $existing['email'];
+        // 6. Cek unique email hanya jika diubah
+        if ($emailInput !== '' && $emailInput !== $existing['email']) {
+            $checkEmail = $pdo->prepare("SELECT id FROM users WHERE email = ?");
+            $checkEmail->execute([$emailInput]);
+            if ($checkEmail->fetch()) {
+                echo json_encode(['status' => 'error', 'message' => 'Email sudah dipakai.']);
+                exit;
+            }
         }
 
-        $newName = 'avatar_' . $userId . '_' . time() . '.' . $ext;
-        $target  = $uploadDir . $newName;
-        if (!move_uploaded_file($_FILES['avatar']['tmp_name'], $target)) {
-            echo json_encode(['status'=>'error','message'=>'Gagal upload avatar.']);
-            exit;
+        // 3. Validasi password (hanya jika ada newPassword)
+        if ($newPassword !== '') {
+            // Jika user sudah punya password, wajib verifikasi old
+            if (!empty($existing['password'])) {
+                if (!password_verify($oldPassword, $existing['password'])) {
+                    echo json_encode(['status' => 'error', 'message' => 'Password lama salah.']);
+                    exit;
+                }
+            }
+            // Cek konfirmasi
+            if ($newPassword !== $confirmNewPwd) {
+                echo json_encode(['status' => 'error', 'message' => 'Konfirmasi password tidak cocok.']);
+                exit;
+            }
+            // Hash baru
+            $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        } else {
+            // Tidak ganti password
+            $passwordHash = $existing['password'];
         }
-        $avatarPath = 'uploads/avatars/' . $newName;
-    }
 
-    // Proses upload background baru dan hapus lama
-    if (!empty($_FILES['background']['name'])) {
-        $uploadDir = __DIR__ . '/../uploads/backgrounds/';
-        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-        $ext = strtolower(pathinfo($_FILES['background']['name'], PATHINFO_EXTENSION));
-        if (!in_array($ext, ['png','jpg','jpeg','gif','webp'])) {
-            echo json_encode(['status'=>'error','message'=>'Format background tidak didukung.']);
-            exit;
+        // Proses upload avatar
+        if (!empty($_FILES['avatar']['name'])) {
+            $uploadDir = __DIR__ . '/../uploads/avatars/';
+            if (!is_dir($uploadDir))
+                mkdir($uploadDir, 0755, true);
+            $ext = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp'])) {
+                echo json_encode(['status' => 'error', 'message' => 'Format avatar tidak didukung.']);
+                exit;
+            }
+
+            // Hapus avatar lama jika bukan default
+            if (!empty($existing['avatar']) && basename($existing['avatar']) !== 'herta-kurukuru.gif') {
+                $oldPath = __DIR__ . '/../' . $existing['avatar'];
+                if (file_exists($oldPath))
+                    @unlink($oldPath);
+            }
+
+            $newName = 'avatar_' . $userId . '_' . time() . '.' . $ext;
+            $target = $uploadDir . $newName;
+            if (!move_uploaded_file($_FILES['avatar']['tmp_name'], $target)) {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal upload avatar.']);
+                exit;
+            }
+            $avatarPath = 'uploads/avatars/' . $newName;
         }
-        if (!empty($existing['background'])) {
-            $oldBg = __DIR__ . '/../' . $existing['background'];
-            if (file_exists($oldBg)) @unlink($oldBg);
+
+        // Proses upload background baru dan hapus lama
+        if (!empty($_FILES['background']['name'])) {
+            $uploadDir = __DIR__ . '/../uploads/backgrounds/';
+            if (!is_dir($uploadDir))
+                mkdir($uploadDir, 0755, true);
+            $ext = strtolower(pathinfo($_FILES['background']['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp'])) {
+                echo json_encode(['status' => 'error', 'message' => 'Format background tidak didukung.']);
+                exit;
+            }
+            if (!empty($existing['background'])) {
+                $oldBg = __DIR__ . '/../' . $existing['background'];
+                if (file_exists($oldBg))
+                    @unlink($oldBg);
+            }
+            $newName = 'background_' . $userId . '_' . time() . '.' . $ext;
+            $target = $uploadDir . $newName;
+            if (!move_uploaded_file($_FILES['background']['tmp_name'], $target)) {
+                echo json_encode(['status' => 'error', 'message' => 'Gagal upload background.']);
+                exit;
+            }
+            $background = 'uploads/backgrounds/' . $newName;
         }
-        $newName = 'background_' . $userId . '_' . time() . '.' . $ext;
-        $target  = $uploadDir . $newName;
-        if (!move_uploaded_file($_FILES['background']['tmp_name'], $target)) {
-            echo json_encode(['status'=>'error','message'=>'Gagal upload background.']);
-            exit;
+
+        // Panggil fungsi updateUser di user_functions.php
+        $res = updateUser(
+            $userId,
+            $newUsername ?: $existing['username'], // pass old username jika null
+            $email,
+            $passwordHash,
+            $avatarPath ?: $existing['avatar'],
+            $roleBaru ?: $existing['role'],
+            $border ?: $existing['border'],
+            $background ?: $existing['background']
+        );
+
+
+        // Update juga session (username, role, avatar)
+        if ($res['status'] === 'success') {
+            if (!empty($newUsername)) {
+                $_SESSION['username'] = $newUsername;
+            }
+            if (!empty($roleBaru)) {
+                $_SESSION['role'] = $roleBaru;
+            }
+            if (!empty($avatarPath)) {
+                $_SESSION['avatar'] = $avatarPath;
+            }
         }
-        $background = 'uploads/backgrounds/' . $newName;
-    }
-
-    // Panggil fungsi updateUser di user_functions.php
-    $res = updateUser(
-        $userId,
-        $newUsername ?: $existing['username'], // pass old username jika null
-        $email,
-        $passwordHash,
-        $avatarPath ?: $existing['avatar'],
-        $roleBaru ?: $existing['role'],
-        $border ?: $existing['border'],
-        $background ?: $existing['background']
-    );
 
 
-    // Update juga session (username, role, avatar)
-    if ($res['status'] === 'success') {
-        $_SESSION['username'] = $newUsername ?: $_SESSION['username'];
-        $_SESSION['role']     = $roleBaru ?: $_SESSION['role'];
-        if ($avatarPath) $_SESSION['avatar'] = $avatarPath;
-    }
-
-    echo json_encode($res);
-    exit;
+        echo json_encode($res);
+        exit;
 
 
     /* =========================
@@ -395,7 +410,7 @@ switch ($action) {
     case 'get_all_threads':
         requireLogin();
         $threads = getAllThreads();
-        echo json_encode(['status'=>'success','data'=>$threads]);
+        echo json_encode(['status' => 'success', 'data' => $threads]);
         exit;
 
     /* =========================
@@ -403,19 +418,20 @@ switch ($action) {
      * ========================= */
     case 'create_thread':
         requireLogin();
-        $userId   = $_SESSION['user_id'];
-        $title    = trim($_POST['title'] ?? '');
-        $content  = trim($_POST['content'] ?? '');
+        $userId = $_SESSION['user_id'];
+        $title = trim($_POST['title'] ?? '');
+        $content = trim($_POST['content'] ?? '');
         $mediaPath = null;
 
         if (!empty($_FILES['media']['name'])) {
             $uploadDir = __DIR__ . '/../uploads/threads/';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+            if (!is_dir($uploadDir))
+                mkdir($uploadDir, 0755, true);
             $ext = pathinfo($_FILES['media']['name'], PATHINFO_EXTENSION);
             $newName = 'thread_' . $userId . '_' . time() . "." . $ext;
             $targetFile = $uploadDir . $newName;
             if (!move_uploaded_file($_FILES['media']['tmp_name'], $targetFile)) {
-                echo json_encode(['status'=>'error','message'=>'Gagal upload media.']);
+                echo json_encode(['status' => 'error', 'message' => 'Gagal upload media.']);
                 exit;
             }
             $mediaPath = 'uploads/threads/' . $newName;
@@ -431,11 +447,11 @@ switch ($action) {
     case 'update_thread':
         requireLogin();
         $threadId = intval($_POST['thread_id'] ?? 0);
-        $userId   = $_SESSION['user_id'];
-        $title    = trim($_POST['title'] ?? '');
-        $content  = trim($_POST['content'] ?? '');
-        $mediaPath= null;
-        $isAdmin  = isAdmin();
+        $userId = $_SESSION['user_id'];
+        $title = trim($_POST['title'] ?? '');
+        $content = trim($_POST['content'] ?? '');
+        $mediaPath = null;
+        $isAdmin = isAdmin();
 
         // Ambil media lama dan hapus jika diganti
         if (!empty($_FILES['media']['name'])) {
@@ -444,12 +460,13 @@ switch ($action) {
                 @unlink(__DIR__ . '/../' . $existing['media']);
             }
             $uploadDir = __DIR__ . '/../uploads/threads/';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+            if (!is_dir($uploadDir))
+                mkdir($uploadDir, 0755, true);
             $ext = pathinfo($_FILES['media']['name'], PATHINFO_EXTENSION);
             $newName = 'thread_' . $userId . '_' . time() . '.' . $ext;
             $targetFile = $uploadDir . $newName;
             if (!move_uploaded_file($_FILES['media']['tmp_name'], $targetFile)) {
-                echo json_encode(['status'=>'error','message'=>'Gagal upload media.']);
+                echo json_encode(['status' => 'error', 'message' => 'Gagal upload media.']);
                 exit;
             }
             $mediaPath = 'uploads/threads/' . $newName;
@@ -465,15 +482,15 @@ switch ($action) {
     case 'delete_thread':
         requireLogin();
         $threadId = intval($_POST['thread_id'] ?? 0);
-        $userId   = $_SESSION['user_id'];
-        $isAdmin  = isAdmin();
+        $userId = $_SESSION['user_id'];
+        $isAdmin = isAdmin();
         // ── Hapus media lama kalau ada
-    $existing = getThreadById($threadId);
-    if (!empty($existing['media']) && file_exists(__DIR__ . '/../' . $existing['media'])) {
-        @unlink(__DIR__ . '/../' . $existing['media']);
-    }
-    // ── Baru panggil deleteThread
-        $res      = deleteThread($threadId, $userId, $isAdmin);
+        $existing = getThreadById($threadId);
+        if (!empty($existing['media']) && file_exists(__DIR__ . '/../' . $existing['media'])) {
+            @unlink(__DIR__ . '/../' . $existing['media']);
+        }
+        // ── Baru panggil deleteThread
+        $res = deleteThread($threadId, $userId, $isAdmin);
         echo json_encode($res);
         exit;
 
@@ -483,8 +500,8 @@ switch ($action) {
     case 'get_replies':
         requireLogin();
         $threadId = intval($_POST['thread_id'] ?? 0);
-        $replies  = getRepliesByThreadId($threadId);
-        echo json_encode(['status'=>'success','data'=>$replies]);
+        $replies = getRepliesByThreadId($threadId);
+        echo json_encode(['status' => 'success', 'data' => $replies]);
         exit;
 
     /* =========================
@@ -493,18 +510,19 @@ switch ($action) {
     case 'create_reply':
         requireLogin();
         $threadId = intval($_POST['thread_id'] ?? 0);
-        $userId   = $_SESSION['user_id'];
-        $content  = trim($_POST['content'] ?? '');
+        $userId = $_SESSION['user_id'];
+        $content = trim($_POST['content'] ?? '');
         $mediaPath = null;
 
         if (!empty($_FILES['media']['name'])) {
             $uploadDir = __DIR__ . '/../uploads/replies/';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+            if (!is_dir($uploadDir))
+                mkdir($uploadDir, 0755, true);
             $ext = pathinfo($_FILES['media']['name'], PATHINFO_EXTENSION);
             $newName = 'reply_' . $userId . '_' . time() . "." . $ext;
             $targetFile = $uploadDir . $newName;
             if (!move_uploaded_file($_FILES['media']['tmp_name'], $targetFile)) {
-                echo json_encode(['status'=>'error','message'=>'Gagal upload media.']);
+                echo json_encode(['status' => 'error', 'message' => 'Gagal upload media.']);
                 exit;
             }
             $mediaPath = 'uploads/replies/' . $newName;
@@ -519,11 +537,11 @@ switch ($action) {
      * ========================= */
     case 'update_reply':
         requireLogin();
-        $replyId  = intval($_POST['reply_id'] ?? 0);
-        $userId   = $_SESSION['user_id'];
-        $content  = trim($_POST['content'] ?? '');
-        $mediaPath= null;
-        $isAdmin  = isAdmin();
+        $replyId = intval($_POST['reply_id'] ?? 0);
+        $userId = $_SESSION['user_id'];
+        $content = trim($_POST['content'] ?? '');
+        $mediaPath = null;
+        $isAdmin = isAdmin();
 
         // Ambil media lama dan hapus jika diganti
         if (!empty($_FILES['media']['name'])) {
@@ -532,12 +550,13 @@ switch ($action) {
                 @unlink(__DIR__ . '/../' . $existing['media']);
             }
             $uploadDir = __DIR__ . '/../uploads/replies/';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+            if (!is_dir($uploadDir))
+                mkdir($uploadDir, 0755, true);
             $ext = pathinfo($_FILES['media']['name'], PATHINFO_EXTENSION);
             $newName = 'reply_' . $userId . '_' . time() . '.' . $ext;
             $targetFile = $uploadDir . $newName;
             if (!move_uploaded_file($_FILES['media']['tmp_name'], $targetFile)) {
-                echo json_encode(['status'=>'error','message'=>'Gagal upload media.']);
+                echo json_encode(['status' => 'error', 'message' => 'Gagal upload media.']);
                 exit;
             }
             $mediaPath = 'uploads/replies/' . $newName;
@@ -553,15 +572,15 @@ switch ($action) {
     case 'delete_reply':
         requireLogin();
         $replyId = intval($_POST['reply_id'] ?? 0);
-        $userId  = $_SESSION['user_id'];
+        $userId = $_SESSION['user_id'];
         $isAdmin = isAdmin();
         // ── Hapus media lama kalau ada
-    $existing = getRepliesByThreadId($replyId);
-    if (!empty($existing['media']) && file_exists(__DIR__ . '/../' . $existing['media'])) {
-        @unlink(__DIR__ . '/../' . $existing['media']);
-    }
-    // ── Baru panggil deleteReply
-        $res     = deleteReply($replyId, $userId, $isAdmin);
+        $existing = getRepliesByThreadId($replyId);
+        if (!empty($existing['media']) && file_exists(__DIR__ . '/../' . $existing['media'])) {
+            @unlink(__DIR__ . '/../' . $existing['media']);
+        }
+        // ── Baru panggil deleteReply
+        $res = deleteReply($replyId, $userId, $isAdmin);
         echo json_encode($res);
         exit;
 
@@ -581,121 +600,123 @@ switch ($action) {
         ");
         $stmt->execute([$keyword, $keyword]);
         $threads = $stmt->fetchAll();
-        echo json_encode(['status'=>'success','data'=>$threads]);
+        echo json_encode(['status' => 'success', 'data' => $threads]);
         exit;
 
-        /* =========================
-        * GET_BORDERS (ADMIN+USER)
-        * ========================= */
-        case 'get_borders':
-            requireLogin();
-            global $pdo;
-            $stmt = $pdo->query("SELECT filename FROM custom_borders ORDER BY uploaded_at DESC");
-            $borders = [];
-            while ($row = $stmt->fetch()) {
-                $borders[] = ['filename' => $row['filename']];
-            }
-            echo json_encode(['status' => 'success', 'data' => $borders]);
-            exit;
+    /* =========================
+     * GET_BORDERS (ADMIN+USER)
+     * ========================= */
+    case 'get_borders':
+        requireLogin();
+        global $pdo;
+        $stmt = $pdo->query("SELECT filename FROM custom_borders ORDER BY uploaded_at DESC");
+        $borders = [];
+        while ($row = $stmt->fetch()) {
+            $borders[] = ['filename' => $row['filename']];
+        }
+        echo json_encode(['status' => 'success', 'data' => $borders]);
+        exit;
 
-        /* =========================
-        * UPLOAD_BORDER (ADMIN)
-        * ========================= */
-        case 'upload_border':
-            requireLogin();
-            requireAdmin();
-            if (!isset($_FILES['uploadBorder']) || $_FILES['uploadBorder']['error'] !== UPLOAD_ERR_OK) {
-                echo json_encode(['status' => 'error', 'message' => 'File tidak ditemukan atau error upload.']);
-                exit;
-            }
-            $file = $_FILES['uploadBorder'];
-            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $allowed = ['png','jpg','jpeg','gif','webp'];
-            if (!in_array($ext, $allowed)) {
-                echo json_encode(['status' => 'error', 'message' => 'Format file border tidak didukung.']);
-                exit;
-            }
-            if ($file['size'] > 5 * 1024 * 1024) {
-                echo json_encode(['status' => 'error', 'message' => 'Ukuran file terlalu besar (maks 5MB).']);
-                exit;
-            }
-            $uploadDir = __DIR__ . '/../uploads/borders/';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-            $newName = 'border_' . time() . '_' . uniqid() . '.' . $ext;
-            $target = $uploadDir . $newName;
-            if (!move_uploaded_file($file['tmp_name'], $target)) {
-                echo json_encode(['status' => 'error', 'message' => 'Gagal upload border.']);
-                exit;
-            }
-            // Masukkan ke tabel custom_borders
-            $stmt = $pdo->prepare("INSERT INTO custom_borders (filename) VALUES (?)");
-            $stmt->execute([$newName]);
-            echo json_encode(['status' => 'success', 'filename' => $newName]);
+    /* =========================
+     * UPLOAD_BORDER (ADMIN)
+     * ========================= */
+    case 'upload_border':
+        requireLogin();
+        requireAdmin();
+        if (!isset($_FILES['uploadBorder']) || $_FILES['uploadBorder']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['status' => 'error', 'message' => 'File tidak ditemukan atau error upload.']);
             exit;
-
-        /* =========================
-        * DELETE_BORDER (ADMIN)
-        * ========================= */
-        case 'delete_border':
-            requireLogin();
-            requireAdmin();
-            $border = $_POST['border'] ?? '';
-            // validasi nama file
-            if (!preg_match('/^[a-zA-Z0-9._-]+$/', $border)) {
-                echo json_encode(['status'=>'error','message'=>'Nama file tidak valid.']);
-                exit;
-            }
-            $path = realpath(__DIR__ . '/../uploads/borders/' . $border);
-            $base = realpath(__DIR__ . '/../uploads/borders');
-            if (strpos($path, $base) !== 0 || !file_exists($path)) {
-                echo json_encode(['status'=>'error','message'=>'File tidak ditemukan.']);
-                exit;
-            }
-            // Hapus file
-            if (!unlink($path)) {
-                echo json_encode(['status'=>'error','message'=>'Gagal hapus file.']);
-                exit;
-            }
-            // Hapus record di DB
-            $stmt = $pdo->prepare("DELETE FROM custom_borders WHERE filename = ?");
-            $stmt->execute([$border]);
-            echo json_encode(['status'=>'success']);
+        }
+        $file = $_FILES['uploadBorder'];
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowed = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+        if (!in_array($ext, $allowed)) {
+            echo json_encode(['status' => 'error', 'message' => 'Format file border tidak didukung.']);
             exit;
-
-        /* =========================
-        * UPLOAD_BACKGROUND (ADMIN)
-        * ========================= */
-        case 'upload_background':
-            requireLogin();
-            if (!isset($_FILES['uploadBackground']) || $_FILES['uploadBackground']['error'] !== UPLOAD_ERR_OK) {
-                echo json_encode(['status'=>'error','message'=>'File tidak ditemukan atau error upload.']);
-                exit;
-            }
-            $file = $_FILES['uploadBackground'];
-            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-            $allowed = ['png','jpg','jpeg','gif','webp'];
-            if (!in_array($ext, $allowed)) {
-                echo json_encode(['status' => 'error', 'message' => 'Format file background tidak didukung.']);
-                exit;
-            }
-            if ($file['size'] > 5 * 1024 * 1024) {
-                echo json_encode(['status' => 'error', 'message' => 'Ukuran file terlalu besar (maks 5MB).']);
-                exit;
-            }
-            $uploadDir = __DIR__ . '/../uploads/backgrounds/';
-            if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-            $newName = 'background_' . time() . '_' . uniqid() . '.' . $ext;
-            $target = $uploadDir . $newName;
-            if (!move_uploaded_file($file['tmp_name'], $target)) {
-                echo json_encode(['status' => 'error', 'message' => 'Gagal upload background.']);
-                exit;
-            }
-            // Catat ke tabel custom_backgrounds (opsional)
-            $stmt = $pdo->prepare("INSERT INTO custom_backgrounds (filename) VALUES (?)");
-            $stmt->execute([$newName]);
-
-            echo json_encode(['status' => 'success', 'filename' => $newName]);
+        }
+        if ($file['size'] > 5 * 1024 * 1024) {
+            echo json_encode(['status' => 'error', 'message' => 'Ukuran file terlalu besar (maks 5MB).']);
             exit;
+        }
+        $uploadDir = __DIR__ . '/../uploads/borders/';
+        if (!is_dir($uploadDir))
+            mkdir($uploadDir, 0755, true);
+        $newName = 'border_' . time() . '_' . uniqid() . '.' . $ext;
+        $target = $uploadDir . $newName;
+        if (!move_uploaded_file($file['tmp_name'], $target)) {
+            echo json_encode(['status' => 'error', 'message' => 'Gagal upload border.']);
+            exit;
+        }
+        // Masukkan ke tabel custom_borders
+        $stmt = $pdo->prepare("INSERT INTO custom_borders (filename) VALUES (?)");
+        $stmt->execute([$newName]);
+        echo json_encode(['status' => 'success', 'filename' => $newName]);
+        exit;
+
+    /* =========================
+     * DELETE_BORDER (ADMIN)
+     * ========================= */
+    case 'delete_border':
+        requireLogin();
+        requireAdmin();
+        $border = $_POST['border'] ?? '';
+        // validasi nama file
+        if (!preg_match('/^[a-zA-Z0-9._-]+$/', $border)) {
+            echo json_encode(['status' => 'error', 'message' => 'Nama file tidak valid.']);
+            exit;
+        }
+        $path = realpath(__DIR__ . '/../uploads/borders/' . $border);
+        $base = realpath(__DIR__ . '/../uploads/borders');
+        if (strpos($path, $base) !== 0 || !file_exists($path)) {
+            echo json_encode(['status' => 'error', 'message' => 'File tidak ditemukan.']);
+            exit;
+        }
+        // Hapus file
+        if (!unlink($path)) {
+            echo json_encode(['status' => 'error', 'message' => 'Gagal hapus file.']);
+            exit;
+        }
+        // Hapus record di DB
+        $stmt = $pdo->prepare("DELETE FROM custom_borders WHERE filename = ?");
+        $stmt->execute([$border]);
+        echo json_encode(['status' => 'success']);
+        exit;
+
+    /* =========================
+     * UPLOAD_BACKGROUND (ADMIN)
+     * ========================= */
+    case 'upload_background':
+        requireLogin();
+        if (!isset($_FILES['uploadBackground']) || $_FILES['uploadBackground']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['status' => 'error', 'message' => 'File tidak ditemukan atau error upload.']);
+            exit;
+        }
+        $file = $_FILES['uploadBackground'];
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowed = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+        if (!in_array($ext, $allowed)) {
+            echo json_encode(['status' => 'error', 'message' => 'Format file background tidak didukung.']);
+            exit;
+        }
+        if ($file['size'] > 5 * 1024 * 1024) {
+            echo json_encode(['status' => 'error', 'message' => 'Ukuran file terlalu besar (maks 5MB).']);
+            exit;
+        }
+        $uploadDir = __DIR__ . '/../uploads/backgrounds/';
+        if (!is_dir($uploadDir))
+            mkdir($uploadDir, 0755, true);
+        $newName = 'background_' . time() . '_' . uniqid() . '.' . $ext;
+        $target = $uploadDir . $newName;
+        if (!move_uploaded_file($file['tmp_name'], $target)) {
+            echo json_encode(['status' => 'error', 'message' => 'Gagal upload background.']);
+            exit;
+        }
+        // Catat ke tabel custom_backgrounds (opsional)
+        $stmt = $pdo->prepare("INSERT INTO custom_backgrounds (filename) VALUES (?)");
+        $stmt->execute([$newName]);
+
+        echo json_encode(['status' => 'success', 'filename' => $newName]);
+        exit;
 
 
     /* =========================
@@ -703,7 +724,7 @@ switch ($action) {
      * ========================= */
     default:
         echo json_encode([
-            'status'  => 'error',
+            'status' => 'error',
             'message' => 'Action tidak valid: ' . $action
         ]);
         exit;
