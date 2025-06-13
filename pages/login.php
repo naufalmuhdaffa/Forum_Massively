@@ -38,7 +38,7 @@ if (isset($_SESSION['user_id'])) {
                     placeholder="Konfirmasi Password" /><br><br>
             </div>
             <div id="emailDiv" class="hidden">
-                <input type="email" id="email" name="email" placeholder="Email (opsional)" /><br><br>
+                <input type="email" id="email" name="email" placeholder="Email" /><br><br>
             </div>
 
             <!-- Captcha -->

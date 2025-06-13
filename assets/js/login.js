@@ -125,6 +125,17 @@ $(document).ready(function () {
     if (isRegisterMode) {
       const confirmPassword = $("#confirmPassword").val();
       const email = $("#email").val().trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+      if (email === "") {
+        showToast("Email tidak boleh kosong, ya!");
+        return;
+      }
+
+      if (!emailRegex.test(email)) {
+        showToast("Format email tidak valid. Gunakan email yang benar, seperti example@mail.com.");
+        return;
+      }
 
       if (password !== confirmPassword) {
         showToast("Password konfirmasi tidak cocok.");
